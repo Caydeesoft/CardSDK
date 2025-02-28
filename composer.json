@@ -1,0 +1,21 @@
+{
+    "name": "caydeesoft/card-sdk",
+    "description": "A Laravel SDK for integrating Visa, MasterCard, Amex, and Discover APIs",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Caydeesoft\\CardSdk\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Caydeesoft\\CardSdk\\CardServiceProvider"
+            ]
+        }
+    }
+}
