@@ -17,13 +17,13 @@ class MastercardClient implements CardInterface
 
         public function __construct()
             {
-                $this->consumerKey = config('card.mastercard_consumer_key');
+                $this->consumerKey    = config('card.mastercard_consumer_key');
                 $this->privateKeyPath = config('card.mastercard_private_key_path');
-                $this->baseUrl = config('card.mastercard_base_url', 'https://sandbox.api.mastercard.com');
+                $this->baseUrl        = config('card.mastercard_base_url', 'https://sandbox.api.mastercard.com');
 
                 $this->client = new Client([
                     'base_uri' => $this->baseUrl,
-                    'timeout' => 10.0,
+                    'timeout'  => 10.0,
                 ]);
             }
 
@@ -45,14 +45,14 @@ class MastercardClient implements CardInterface
         private function request(string $method, string $endpoint, array $data = []): array
             {
                 $response = $this->client->request($method, $endpoint, [
-                    'json' => $data,
+                    'json'    => $data,
                     'headers' => [
                         'Authorization' => "OAuth {$this->consumerKey}",
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
                     ],
                 ]);
 
-                return json_decode((string) $response->getBody(), true) ?? [];
+                return json_decode((string)$response->getBody(), true) ?? [];
             }
     }

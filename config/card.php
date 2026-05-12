@@ -15,4 +15,7 @@ return [
 
     'discover_api_key' => env('DISCOVER_API_KEY'),
     'discover_base_url' => env('DISCOVER_BASE_URL', 'https://api.discover.com'),
+
+    'encryption_iterations' => env('CARD_ENCRYPTION_ITERATIONS', 210000),
+    'encryption_pepper' => env('CARD_ENCRYPTION_PEPPER', ''),
 ];

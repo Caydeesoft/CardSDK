@@ -15,12 +15,12 @@ class DiscoverClient implements CardInterface
 
         public function __construct()
             {
-                $this->apiKey = config('card.discover_api_key');
+                $this->apiKey  = config('card.discover_api_key');
                 $this->baseUrl = config('card.discover_base_url', 'https://api.discover.com');
 
                 $this->client = new Client([
                     'base_uri' => $this->baseUrl,
-                    'timeout' => 10.0,
+                    'timeout'  => 10.0,
                 ]);
             }
 
@@ -42,14 +42,14 @@ class DiscoverClient implements CardInterface
         private function request(string $method, string $endpoint, array $data = []): array
             {
                 $response = $this->client->request($method, $endpoint, [
-                    'json' => $data,
+                    'json'    => $data,
                     'headers' => [
                         'Authorization' => "Bearer {$this->apiKey}",
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
                     ],
                 ]);
 
-                return json_decode((string) $response->getBody(), true) ?? [];
+                return json_decode((string)$response->getBody(), true) ?? [];
             }
     }
