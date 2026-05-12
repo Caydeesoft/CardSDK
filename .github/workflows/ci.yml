@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '8.2'
+          - '8.3'
+          - '8.4'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, openssl
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Lint package files
+        run: find src config tests -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Run validator assertions
+        run: |
+          php -r 'require "vendor/autoload.php";
+          use Caydeesoft\CardSdk\CardValidator;
+          function check(bool $condition, string $message): void {
+              if (! $condition) {
+                  throw new RuntimeException($message);
+              }
+          }
+          check(CardValidator::getCardType("4111111111111111") === "Visa", "Visa detection failed");
+          check(CardValidator::getCardType("378282246310005") === "Amex", "Amex detection failed");
+          check(CardValidator::getCardType("2221000000000009") === "MasterCard", "Mastercard detection failed");
+          check(CardValidator::getCardType("2721000000000000") === "Unknown", "Invalid Mastercard range was accepted");
+          check(CardValidator::isValidCardNumber("4111111111111111") === true, "Luhn validation failed");
+          check(CardValidator::isValidCVV("1234", "Amex") === true, "Amex CVV validation failed");
+          check(CardValidator::isValidCVV("1234", "Visa") === false, "Visa CVV validation accepted four digits");
+          echo "validator assertions passed".PHP_EOL;'
+
+      - name: Run encryption assertions
+        run: |
+          php -r 'require "vendor/autoload.php";
+          use Caydeesoft\CardSdk\StoredCardEncryptor;
+          function check(bool $condition, string $message): void {
+              if (! $condition) {
+                  throw new RuntimeException($message);
+              }
+          }
+          $encryptor = new StoredCardEncryptor(100000, "server-pepper");
+          $payload = $encryptor->encrypt(["card_token" => "tok_123", "last_four" => "1111"], "123456");
+          $plain = $encryptor->decrypt($payload, "123456");
+          check($plain["card_token"] === "tok_123", "Stored token was not decrypted");
+          try {
+              $encryptor->decrypt($payload, "000000");
+              throw new RuntimeException("Wrong PIN decrypted the payload");
+          } catch (InvalidArgumentException $exception) {
+          }
+          try {
+              $encryptor->encrypt(["cvv" => "123"], "123456");
+              throw new RuntimeException("CVV data was encrypted");
+          } catch (InvalidArgumentException $exception) {
+          }
+          echo "encryption assertions passed".PHP_EOL;'
