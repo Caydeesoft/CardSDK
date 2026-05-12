@@ -1,12 +1,12 @@
 <?php
 	
-	namespace Caydeesoft\CardSdk;
+	namespace Caydeesoft\CardSdk\Contracts;
 	
 	interface CardInterface
 		{
-			public function authorizePayment(array $paymentData);
-			
-			public function capturePayment(string $transactionId);
-			
-			public function refundPayment(string $transactionId);
+            public function authorizePayment(array $paymentData): array;
+
+            public function capturePayment(string $transactionId): array;
+
+            public function refundPayment(string $transactionId): array;
 		}

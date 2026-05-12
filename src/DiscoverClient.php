@@ -5,7 +5,7 @@ namespace Caydeesoft\CardSdk;
 use Caydeesoft\CardSdk\Contracts\CardInterface;
 use GuzzleHttp\Client;
 
-class AmexClient implements CardInterface
+class DiscoverClient implements CardInterface
     {
         private Client $client;
 
@@ -15,8 +15,8 @@ class AmexClient implements CardInterface
 
         public function __construct()
             {
-                $this->apiKey = config('card.amex_api_key');
-                $this->baseUrl = config('card.amex_base_url', 'https://api.americanexpress.com');
+                $this->apiKey = config('card.discover_api_key');
+                $this->baseUrl = config('card.discover_base_url', 'https://api.discover.com');
 
                 $this->client = new Client([
                     'base_uri' => $this->baseUrl,
@@ -26,17 +26,17 @@ class AmexClient implements CardInterface
 
         public function authorizePayment(array $paymentData): array
             {
-                return $this->request('POST', '/amex/payments/authorize', $paymentData);
+                return $this->request('POST', '/discover/payments/authorize', $paymentData);
             }
 
         public function capturePayment(string $transactionId): array
             {
-                return $this->request('POST', "/amex/payments/capture/{$transactionId}");
+                return $this->request('POST', "/discover/payments/capture/{$transactionId}");
             }
 
         public function refundPayment(string $transactionId): array
             {
-                return $this->request('POST', "/amex/payments/refund/{$transactionId}");
+                return $this->request('POST', "/discover/payments/refund/{$transactionId}");
             }
 
         private function request(string $method, string $endpoint, array $data = []): array
