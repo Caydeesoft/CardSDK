@@ -24,7 +24,7 @@ php -r 'require "vendor/autoload.php"; use Caydeesoft\CardSdk\StoredCardEncrypto
 The repository includes:
 
 - `.github/workflows/ci.yml` for Composer validation, dependency installation, PHP linting, validator assertions, and encryption assertions across PHP 8.2, 8.3, and 8.4.
-- `.github/workflows/security.yml` for CodeQL analysis and dependency review.
+- `.github/workflows/security.yml` for Composer dependency auditing and dependency review.
 
 ## Review Checklist
 
